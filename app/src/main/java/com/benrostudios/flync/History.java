@@ -9,12 +9,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-public class HomeFragment extends Fragment {
 
+
+
+public class History extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View fragview = inflater.inflate(R.layout.fragment_home, null);
+        final View fragview = inflater.inflate(R.layout.fragment_history, null);
 
 
         return fragview;

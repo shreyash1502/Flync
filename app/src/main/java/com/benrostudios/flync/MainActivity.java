@@ -8,37 +8,51 @@ import android.support.annotation.NonNull;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
-    private TextView mTextMessage;
+public class
+MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    return true;
-                case R.id.navigation_history:
-                    mTextMessage.setText(R.string.title_history);
-                    return true;
-                case R.id.navigation_settings:
-                    mTextMessage.setText(R.string.title_settings);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        mTextMessage = findViewById(R.id.message);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.nav_view);
+
+        navigation.setOnNavigationItemSelectedListener(this);
+        loadFrag(new HomeFragment());
     }
 
+    private boolean loadFrag (Fragment fragment){
+        if(fragment != null){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame,fragment)
+                    .commit();
+
+
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Fragment fragmenthere = null;
+        switch (menuItem.getItemId()){
+            case R.id.navigation_home : fragmenthere =  new HomeFragment();
+                break;
+            case R.id.navigation_history : fragmenthere = new History();
+                break;
+            case R.id.navigation_settings : fragmenthere = new Settings();
+                break;}
+
+        loadFrag(fragmenthere);
+
+
+        return true;
+    }
 }
