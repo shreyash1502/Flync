@@ -21,7 +21,7 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.nav_view);
-
+        navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(this);
         loadFrag(new HomeFragment());
     }
