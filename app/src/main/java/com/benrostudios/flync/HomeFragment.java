@@ -1,40 +1,66 @@
 package com.benrostudios.flync;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.File;
 
-public class HomeFragment extends Fragment {
+import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
-    private final static double noBytesInOneGB = 1073741824.0;
+public class HomeFragment extends Fragment{
 
-    private TextView storageInfoTextView;
+    private final static double noBytesInOneGB = 1000000000.0;
+
+    private TextView mUsedSpaceTextView;
+    private TextView mTotalSpaceTextView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View fragview = inflater.inflate(R.layout.fragment_home, null);
-        storageInfoTextView = fragview.findViewById(R.id.storageTextView);
 
-        //code to find out how much storage exists and how much is used
+        CircularProgressIndicator circularProgress = fragview.findViewById(R.id.circular_progress);
+        mUsedSpaceTextView = fragview.findViewById(R.id.usedStorageTextView);
+        mTotalSpaceTextView = fragview.findViewById(R.id.totalStorageTextView);
+
+
         StatFs stat = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-        double totalSpaceInGB = stat.getTotalBytes()/noBytesInOneGB;
-        double freeSpaceInGB = stat.getAvailableBytes()/noBytesInOneGB;
-        storageInfoTextView.setText("total: " + totalSpaceInGB + "\n free: " + freeSpaceInGB);
+        double totalSpaceInGB = stat.getTotalBytes() / noBytesInOneGB;
+        double freeSpaceInGB = stat.getAvailableBytes() / noBytesInOneGB;
+        double usedSpaceInGB = totalSpaceInGB - freeSpaceInGB;
 
+        mUsedSpaceTextView.setText(usedSpaceFormattedText(usedSpaceInGB));
+        mTotalSpaceTextView.setText(totalSpaceFormattedText(totalSpaceInGB));
+
+        float usedPercent = (float) (usedSpaceInGB/totalSpaceInGB)*100;
+        circularProgress.setProgress(usedPercent, 100);
+        circularProgress.setProgressTextAdapter(TEXT_ADAPTER);
         return fragview;
+    }
+
+    private static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = new CircularProgressIndicator.ProgressTextAdapter() {
+        @Override
+        public String formatText(double progress) {
+            String text = String.format("%.1f", progress) + "% used";
+            return text;
+        }
+    };
+
+    private String usedSpaceFormattedText(double usedSpaceInGB)
+    {
+        return String.format("%.2f", usedSpaceInGB) + " " + getString(R.string.gb);
+    }
+
+    private String totalSpaceFormattedText(double totalSpaceInGB)
+    {
+        return getString(R.string.used_of) + " " + String.format("%.2f", totalSpaceInGB) + " " + getString(R.string.gb);
     }
 
 }

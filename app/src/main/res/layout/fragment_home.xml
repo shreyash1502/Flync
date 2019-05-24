@@ -37,6 +37,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/verticalHalfDivider" />
 
+    <View
+        android:id="@+id/horizontalHalfDivider"
+        android:layout_width="1dp"
+        android:layout_height="715dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="invisible"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <android.support.v7.widget.CardView
         android:id="@+id/sendCardView"
         android:layout_width="0dp"
@@ -140,17 +155,54 @@
 
     </android.support.v7.widget.CardView>
 
+    <antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator
+        android:id="@+id/circular_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        app:direction="clockwise"
+        app:dotColor="@color/colorPrimary"
+        app:dotWidth="8dp"
+        app:drawDot="true"
+        app:enableProgressAnimation="true"
+        app:fillBackground="false"
+        app:layout_constraintBottom_toTopOf="@+id/verticalHalfDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/horizontalHalfDivider"
+        app:layout_constraintTop_toTopOf="parent"
+        app:progressBackgroundColor="@android:color/darker_gray"
+        app:progressBackgroundStrokeWidth="8dp"
+        app:progressColor="@color/colorPrimary"
+        app:progressStrokeWidth="8dp"
+        app:startAngle="270"
+        app:textColor="@android:color/black" />
+
     <TextView
-        android:id="@+id/storageTextView"
+        android:id="@+id/usedStorageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Pie chart comes here"
-        app:layout_constraintBottom_toTopOf="@+id/verticalHalfDivider"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@android:color/black"
+        tools:text="12.89 GB"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintBottom_toBottomOf="@+id/circular_progress"
+        app:layout_constraintEnd_toStartOf="@+id/horizontalHalfDivider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/circular_progress" />
+
+    <TextView
+        android:id="@+id/totalStorageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="@+id/usedStorageTextView"
+        app:layout_constraintTop_toBottomOf="@+id/usedStorageTextView"
+        app:textAllCaps="true"
+        tools:text="used of 64GB" />
+
 
 </android.support.constraint.ConstraintLayout>

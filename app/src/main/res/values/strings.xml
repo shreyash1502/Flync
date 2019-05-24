@@ -8,4 +8,7 @@
     <string name="title_history">History</string>
     <string name="title_settings">Settings</string>
 
+    <string name="gb">GB</string>
+    <string name="used_of">used of</string>
+
 </resources>
