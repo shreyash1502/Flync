@@ -8,10 +8,12 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/lenview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Settings_Fargment" />
+        android:text="Settings_Fargment"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <Button
         android:id="@+id/explorer"
@@ -20,10 +22,54 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="File"
-        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        android:text="Set"
+        app:layout_constraintBottom_toBottomOf="@+id/lenview"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/textView" />
+        app:layout_constraintStart_toStartOf="@+id/lenview"
+        app:layout_constraintTop_toTopOf="@+id/lenview" />
+
+    <Button
+        android:id="@+id/sned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/explorer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lenview" />
+
+    <TextView
+        android:id="@+id/le"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/lenview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.589"
+        app:layout_constraintStart_toStartOf="@+id/lenview"
+        app:layout_constraintTop_toTopOf="@+id/lenview"
+        app:layout_constraintVertical_bias="0.702" />
+
+    <Button
+        android:id="@+id/func"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Button"
+        app:layout_constraintBottom_toTopOf="@+id/explorer"
+        app:layout_constraintEnd_toEndOf="@+id/lenview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sned"
+        tools:text="Func" />
 
 </android.support.constraint.ConstraintLayout>
