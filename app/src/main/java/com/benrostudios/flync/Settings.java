@@ -23,6 +23,7 @@ import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 
 import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class Settings extends Fragment {
 
 
     private String selectedFilePath;
-
+    private String filename;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     public static final int FILE_PICKER_REQUEST_CODE = 1;
     @Nullable
@@ -78,10 +79,25 @@ public class Settings extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Socket sock;
+                Socket sock = null;
+                try{
+                    sock = new Socket("192.168.0.109",1149);
+                    DataOutputStream DOS = new DataOutputStream(sock.getOutputStream());
+                    DOS.writeUTF(filename);
+
+
+
+
+                }catch (UnknownHostException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 try {
 
-                    sock = new Socket("192.168.0.109", 1149);
+
                     System.out.println("Connecting...");
 
                     // sendfile
@@ -133,6 +149,9 @@ public class Settings extends Fragment {
             if (path != null) {
                 Log.d("Path: ", path);
                 Toast.makeText(getContext(), "Picked file: " + path, Toast.LENGTH_LONG).show();
+                String[] splitter = path.split("/");
+                int filepos = splitter.length-1;
+                filename = splitter[filepos];
 
             }
         }
