@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.os.StrictMode;
@@ -33,7 +34,7 @@ import java.net.UnknownHostException;
 
 
 
-public class Settings extends Fragment {
+public class Settings extends Fragment  {
 
 
 
@@ -42,6 +43,7 @@ public class Settings extends Fragment {
 
     private String selectedFilePath;
     private String filename;
+    private int filesize;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     public static final int FILE_PICKER_REQUEST_CODE = 1;
     @Nullable
@@ -79,53 +81,7 @@ public class Settings extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Socket sock = null;
-                try{
-                    sock = new Socket("192.168.0.109",1149);
-                    DataOutputStream DOS = new DataOutputStream(sock.getOutputStream());
-                    DOS.writeUTF(filename);
-
-
-
-
-                }catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                try {
-
-
-                    System.out.println("Connecting...");
-
-                    // sendfile
-
-                    File myFile = new File(selectedFilePath);
-
-                    byte [] mybytearray  = new byte [(int)myFile.length()];
-                    Toast.makeText(getActivity(), mybytearray.toString(), Toast.LENGTH_SHORT).show();
-
-
-
-                    FileInputStream fis = new FileInputStream(myFile);
-                    BufferedInputStream bis = new BufferedInputStream(fis);
-                    bis.read(mybytearray,0,mybytearray.length);
-                    OutputStream os = sock.getOutputStream();
-                    Toast.makeText(getActivity(), "Sending.....", Toast.LENGTH_SHORT).show();
-                    os.write(mybytearray,0,mybytearray.length);
-                    os.flush();
-
-                    sock.close();
-                    Toast.makeText(getActivity(), "Sent!", Toast.LENGTH_SHORT).show();
-                } catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            new AsyncManager(getActivity(),1).execute(selectedFilePath,filename);
             }
         });
 
@@ -194,7 +150,8 @@ public class Settings extends Fragment {
 
 
         new MaterialFilePicker()
-
+                .withTitle("Choose a file")
+                .withCloseMenu(true)
                 .withRequestCode(1)
                 .withSupportFragment(MainActivity.getFrag())
                 .withFilterDirectories(true) // Set directories filterable (false by default)
@@ -202,6 +159,9 @@ public class Settings extends Fragment {
                 .start();
         
     }
+
+
+
 
 
 
