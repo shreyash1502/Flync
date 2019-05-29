@@ -2,13 +2,16 @@ package com.benrostudios.flync;
 
 
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.annotation.NonNull;
+
 import android.view.MenuItem;
 
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class
 MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {

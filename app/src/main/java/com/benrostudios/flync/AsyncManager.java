@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
-public class AsyncManager extends AsyncTask< String , Integer ,String> {
+public class AsyncManager extends AsyncTask<ArrayList<String>, Integer ,String> {
 
     Activity mContext;
     Integer mode;
@@ -29,9 +30,9 @@ public class AsyncManager extends AsyncTask< String , Integer ,String> {
 
     }
     @Override
-    protected String doInBackground(String... params) {
-        String selectedFilePath = params[0];
-        String filename = params[1];
+    protected String doInBackground(ArrayList<String>... params) {
+        String selectedFilePath = params[0].toString();
+        String filename = params[1].toString();
 
         if(mode==1) {
 

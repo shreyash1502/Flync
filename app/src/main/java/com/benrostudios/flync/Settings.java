@@ -1,18 +1,15 @@
 package com.benrostudios.flync;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import android.os.AsyncTask;
+
 import android.os.Bundle;
 
 import android.os.StrictMode;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,21 +17,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 
-import java.io.BufferedInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
 
 
-
-public class Settings extends Fragment  {
+public class Settings extends Fragment {
 
 
 
@@ -43,6 +42,8 @@ public class Settings extends Fragment  {
 
     private String selectedFilePath;
     private String filename;
+    private ArrayList<String> filePaths = new ArrayList<>();
+    private ArrayList<String> photoPaths = new ArrayList<>();
     private int filesize;
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     public static final int FILE_PICKER_REQUEST_CODE = 1;
@@ -81,7 +82,7 @@ public class Settings extends Fragment  {
             @Override
             public void onClick(View view) {
 
-            new AsyncManager(getActivity(),1).execute(selectedFilePath,filename);
+            new AsyncManager(getActivity(),1).execute(filePaths);
             }
         });
 
@@ -97,19 +98,22 @@ public class Settings extends Fragment  {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // The Request code was randomly assigned , if you are wondering
-        if (requestCode == FILE_PICKER_REQUEST_CODE ) {
-            String path = data.getStringExtra(FilePickerActivity.RESULT_FILE_PATH);
-
-            selectedFilePath = path;
-
-            if (path != null) {
-                Log.d("Path: ", path);
-                Toast.makeText(getContext(), "Picked file: " + path, Toast.LENGTH_LONG).show();
-                String[] splitter = path.split("/");
-                int filepos = splitter.length-1;
-                filename = splitter[filepos];
-
-            }
+        switch (requestCode)
+        {
+            case FilePickerConst.REQUEST_CODE_PHOTO:
+                if(resultCode== Activity.RESULT_OK && data!=null)
+                {
+                    photoPaths = new ArrayList<>();
+                    photoPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+                }
+                break;
+            case FilePickerConst.REQUEST_CODE_DOC:
+                if(resultCode== Activity.RESULT_OK && data!=null)
+                {
+                    filePaths = new ArrayList<>();
+                    filePaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+                }
+                break;
         }
     }
 
@@ -149,15 +153,11 @@ public class Settings extends Fragment  {
     public void openFilePicker() {
 
 
-        new MaterialFilePicker()
-                .withTitle("Choose a file")
-                .withCloseMenu(true)
-                .withRequestCode(1)
-                .withSupportFragment(MainActivity.getFrag())
-                .withFilterDirectories(true) // Set directories filterable (false by default)
-                .withHiddenFiles(false) // Show hidden files and folders
-                .start();
-        
+        FilePickerBuilder.getInstance().setMaxCount(5)
+                .setSelectedFiles(filePaths)
+                .setActivityTheme(R.style.LibAppTheme)
+                .pickFile(this, FILE_PICKER_REQUEST_CODE);
+
     }
 
 
