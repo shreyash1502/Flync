@@ -95,7 +95,7 @@ public class AsyncManager extends AsyncTask<String, Integer ,String> {
 
     @Override
     protected void onPostExecute(String bitmaps) {
-        Toast.makeText(mContext, "Sent!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "ATM SAYS SENT", Toast.LENGTH_SHORT).show();
 
     }
 }
