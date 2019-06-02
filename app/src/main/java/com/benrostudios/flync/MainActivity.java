@@ -64,7 +64,7 @@ public static Fragment passer;
         switch (menuItem.getItemId()){
             case R.id.navigation_home : fragmenthere =  new HomeFragment();tag="home";
                 break;
-            case R.id.navigation_history : fragmenthere = new History();tag = "history";
+            case R.id.navigation_history : fragmenthere = new HistoryFragment();tag = "history";
                 break;
             case R.id.navigation_settings : fragmenthere = new Settings();tag = "settings";
                 break;}
