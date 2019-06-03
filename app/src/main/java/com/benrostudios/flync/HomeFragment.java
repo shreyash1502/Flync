@@ -26,7 +26,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,6 +53,7 @@ public class HomeFragment extends Fragment {
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     public static final int FILE_PICKER_REQUEST_CODE = 1;
     private final static double noBytesInOneGB = 1000000000.0;
+    private static int MODE_CODE;
 
     private TextView mUsedSpaceTextView;
     private TextView mTotalSpaceTextView;
@@ -71,11 +80,23 @@ public class HomeFragment extends Fragment {
         circularProgress.setProgress(usedPercent, 100);
         circularProgress.setProgressTextAdapter(TEXT_ADAPTER);
         CardView sendButton = fragview.findViewById(R.id.sendCardView);
+        CardView receiveButton = fragview.findViewById(R.id.receiveCardView);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Creating a new Intent to invoke the File Manager
-                checkPermissionsAndOpenFilePicker();
+                MODE_CODE = 1;
+                checkPermissionsAndOpen(MODE_CODE);
+
+            }
+        });
+        receiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Creating a new Intent to invoke the File Manager
+                MODE_CODE = 2;
+                checkPermissionsAndOpen(MODE_CODE);
+                Toast.makeText(getActivity(), "Listening...", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -171,19 +192,18 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void checkPermissionsAndOpenFilePicker() {
+    private void checkPermissionsAndOpen(int code) {
         String permission = Manifest.permission.READ_EXTERNAL_STORAGE;
 
         if (ContextCompat.checkSelfPermission(getActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getActivity(), "Nahi degi Bhos", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(this.getActivity(), new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
                 showError();
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, PERMISSIONS_REQUEST_CODE);
             }
         } else {
-            openFilePicker();
+            relay(code);
         }
     }
 
@@ -198,7 +218,7 @@ public class HomeFragment extends Fragment {
             case PERMISSIONS_REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openFilePicker();
+                    relay(MODE_CODE);
                 } else {
                     showError();
                 }
@@ -253,6 +273,96 @@ public class HomeFragment extends Fragment {
 
         return returnName;
     }
+    public void Receive() throws IOException {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run()  {
+                try{
+                    String msg_received;
+                    int filesize;
 
+
+                    long start = System.currentTimeMillis();
+                    int bytesRead;
+                    int current = 0;
+
+                    // create socket
+                    ServerSocket servsock = new ServerSocket(1149);
+                    while (true) {
+                        System.out.println("Waiting...");
+
+                        Socket sock = servsock.accept();
+                        System.out.println("Accepted connection : " + sock);
+
+                        DataInputStream DIS = new DataInputStream(sock.getInputStream());
+                        String incomingmessages = DIS.readUTF();
+                        String[] splitter = incomingmessages.split("/");
+                        msg_received = splitter[0];
+                        if (splitter[1].contains("/")) {
+                            filesize = 104857600;
+
+                        } else {
+                            filesize = Integer.parseInt(splitter[1]) + 1;
+                            System.out.println("" + filesize);
+                        }
+                        // receive file
+
+                        byte[] mybytearray = new byte[filesize];
+                        InputStream is = sock.getInputStream();
+                        File file = new File(Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS), msg_received);
+                        System.out.println(file);
+                        boolean isCreated = file.createNewFile();
+                        FileOutputStream fos = new FileOutputStream(file);
+                        if(isCreated){
+                            System.out.println("FileCreated");
+
+                        }else{
+                            System.out.println("Already Exists?");
+
+                        }
+
+                        OutputStream bos = new BufferedOutputStream(fos);
+                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+                        current = bytesRead;
+
+                        do {
+                            bytesRead =
+                                    is.read(mybytearray, current, (mybytearray.length - current));
+                            if (bytesRead >= 0) current += bytesRead;
+                        } while (bytesRead > -1);
+                        System.out.println("Downloaded!");
+                        bos.write(mybytearray, 0, current);
+                        bos.flush();
+                        long end = System.currentTimeMillis();
+                        System.out.println(end - start);
+                        bos.close();
+
+
+                        sock.close();
+                    }
+                }catch(IOException e ){
+
+                    System.out.println(e.toString());
+
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void relay(int switchCode){
+        if(switchCode==1){
+            openFilePicker();
+
+        }else if(switchCode == 2){
+            try{
+                Receive();}catch(IOException e){}
+
+
+        }
+
+    }
 
 }

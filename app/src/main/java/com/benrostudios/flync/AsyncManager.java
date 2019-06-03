@@ -10,12 +10,17 @@ import com.benrostudios.flync.data.AppDatabase;
 import com.benrostudios.flync.data.History;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -58,6 +63,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
                     String ipAddress = "192.168.0.109";
                     sock = new Socket(ipAddress, 1149);
                     File myFile = new File(selectedFilePath);
+
                     long filesize = myFile.length();
                     Log.d("sentfiles", selectedFilePath + " " + filesize);
                     DataOutputStream DOS = new DataOutputStream(sock.getOutputStream());
@@ -89,7 +95,14 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
             }
             else if (mode == 2)
             {
-                //Receive Async Task here
+
+                try {
+                    Recieve();
+                    Log.d("SockERROR","Started");
+                }catch(IOException e){
+                 Log.d("SockERROR",e.toString());
+
+                }
             }
         }
 
@@ -104,16 +117,70 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
     @Override
     protected void onPostExecute(String bitmaps)
     {
-        Toast.makeText(mContext, "HEMANTH SAYS SENT", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
     }
 
     private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName)//rn, im treating computerName as the IP. when the final computer selector screen works, this will serve proper functionality
     {
         Date curDate = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ssZ");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
         History historyEntry = new History(com.benrostudios.flync.data.History.SEND, fileName, fileSize, computerName, simpleDateFormat.format(curDate));
         AppDatabase db = AppDatabase.getAppDatabase(context);
         db.historyDao().insert(historyEntry);
+    }
+    public void Recieve() throws IOException {
+        String msg_received;
+        int newfilesize;
+        int filesize;
+
+
+        long start = System.currentTimeMillis();
+        int bytesRead;
+        int current = 0;
+
+        // create socket
+        ServerSocket servsock = new ServerSocket(1149);
+        while (true) {
+            System.out.println("Waiting...");
+
+            Socket sock = servsock.accept();
+            System.out.println("Accepted connection : " + sock);
+            DataInputStream DIS = new DataInputStream(sock.getInputStream());
+            String incomingmessages = DIS.readUTF();
+            String[] splitter = incomingmessages.split("/");
+            msg_received = splitter[0];
+            if(splitter[1].contains("/")){
+                filesize = 104857600;
+
+            }else{
+                filesize = Integer.parseInt(splitter[1])+1;
+                System.out.println(""+filesize);
+            }
+            // receive file
+            byte [] mybytearray  = new byte [filesize];
+            InputStream is = sock.getInputStream();
+            FileOutputStream fos = new FileOutputStream("C:\\Users\\HKP\\Documents\\"+msg_received);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            bytesRead = is.read(mybytearray,0,mybytearray.length);
+            current = bytesRead;
+
+            // thanks to A. Cádiz for the bug fix
+            do {
+                bytesRead =
+                        is.read(mybytearray, current, (mybytearray.length-current));
+                if(bytesRead >= 0) current += bytesRead;
+            } while(bytesRead > -1);
+            System.out.println("Downloaded!");
+            bos.write(mybytearray, 0 , current);
+            bos.flush();
+            long end = System.currentTimeMillis();
+            System.out.println(end-start);
+            bos.close();
+
+
+
+            sock.close();
+        }
     }
 
 }
