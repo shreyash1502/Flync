@@ -18,9 +18,12 @@ public interface HistoryDao
     @Delete
     void delete(History historyItem);
 
-    @Query("SELECT * from history")
+    @Query("SELECT * from history ORDER BY uid DESC")
     List<History> getAllHistory();
 
     @Query("SELECT COUNT(*) FROM history")
     int getCount();
+
+    @Query("DELETE FROM history")
+    void deleteAllHistory();
 }

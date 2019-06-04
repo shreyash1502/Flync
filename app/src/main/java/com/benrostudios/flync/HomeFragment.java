@@ -94,8 +94,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Creating a new Intent to invoke the File Manager
-                MODE_CODE = 2;
-                checkPermissionsAndOpen(MODE_CODE);
+               MODE_CODE =2;
+               checkPermissionsAndOpen(2);
                 Toast.makeText(getActivity(), "Listening...", Toast.LENGTH_LONG).show();
 
             }
@@ -318,7 +318,7 @@ public class HomeFragment extends Fragment {
                             System.out.println("FileCreated");
 
                         }else{
-                            System.out.println("Already Exists?");
+                            System.out.println("Already Exists?");// The file is receievd , but it cannot create it on your phone
 
                         }
 
@@ -364,5 +364,9 @@ public class HomeFragment extends Fragment {
         }
 
     }
+
+
+
+
 
 }

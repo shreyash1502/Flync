@@ -2,6 +2,9 @@ package com.benrostudios.flync;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -29,9 +32,29 @@ public class HistoryFragment extends Fragment
         List<History> histories = db.historyDao().getAllHistory();
         HistoryAdapter adapter = new HistoryAdapter(getActivity(), histories);
         ListView itemsListView  = fragview.findViewById(R.id.history_list_view);
+        itemsListView.setDivider(null);
         itemsListView.setAdapter(adapter);
-
         return fragview;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.history_fragment_options_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.delete_history:
+                AppDatabase db = AppDatabase.getAppDatabase(getActivity());
+                db.historyDao().deleteAllHistory();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

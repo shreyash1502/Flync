@@ -60,7 +60,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
 
 
                     // sendfile
-                    String ipAddress = "192.168.0.109";
+                    String ipAddress = "192.168.1.13";
                     sock = new Socket(ipAddress, 1149);
                     File myFile = new File(selectedFilePath);
 
@@ -80,7 +80,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
                     os.write(mybytearray, 0, mybytearray.length);
                     os.flush();
                     //insert into db here
-                    insertIntoDatabase(mContext, filename, filesize, ipAddress);
+                    insertIntoDatabase(mContext, filename, filesize, ipAddress, History.SEND);
                     sock.close();
 
                 } catch (UnknownHostException e)
@@ -120,17 +120,17 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
         Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
     }
 
-    private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName)//rn, im treating computerName as the IP. when the final computer selector screen works, this will serve proper functionality
+    private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName, int sendOrReceive)
     {
         Date curDate = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
-        History historyEntry = new History(com.benrostudios.flync.data.History.SEND, fileName, fileSize, computerName, simpleDateFormat.format(curDate));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy @ HH:mm a");
+        History historyEntry = new History(sendOrReceive, fileName, fileSize, computerName, simpleDateFormat.format(curDate));
         AppDatabase db = AppDatabase.getAppDatabase(context);
         db.historyDao().insert(historyEntry);
     }
     public void Recieve() throws IOException {
         String msg_received;
-        int newfilesize;
+        String sendersIp = "";
         int filesize;
 
 
@@ -159,7 +159,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
             // receive file
             byte [] mybytearray  = new byte [filesize];
             InputStream is = sock.getInputStream();
-            FileOutputStream fos = new FileOutputStream("C:\\Users\\HKP\\Documents\\"+msg_received);
+            FileOutputStream fos = new FileOutputStream("C:\\Users\\aryan\\Documents\\"+msg_received);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             bytesRead = is.read(mybytearray,0,mybytearray.length);
             current = bytesRead;
@@ -176,9 +176,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
             long end = System.currentTimeMillis();
             System.out.println(end-start);
             bos.close();
-
-
-
+            insertIntoDatabase(mContext, msg_received, filesize, sendersIp, History.RECEIVE);
             sock.close();
         }
     }

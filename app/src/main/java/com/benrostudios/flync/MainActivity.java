@@ -29,7 +29,7 @@ public static Fragment passer;
 
 
        //Just defining where the Nav Bar actually is
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.nav_view);
+        BottomNavigationView navigation = findViewById(R.id.nav_view);
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(this);
         //Loading the default Fragment that should be loaded at start of the app
@@ -38,7 +38,8 @@ public static Fragment passer;
             getSupportFragmentManager().findFragmentByTag(tag);
             Toast.makeText(this, "FragReused", Toast.LENGTH_SHORT).show();
 
-        }else {
+        }
+        else {
             loadFrag(new HomeFragment() , "home");
         }
     }
@@ -49,7 +50,6 @@ public static Fragment passer;
                     .beginTransaction()
                     .replace(R.id.frame,fragment,Tag)
                     .commit();
-            Toast.makeText(this, tag, Toast.LENGTH_SHORT).show();
 
             return false;
         }

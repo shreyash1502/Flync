@@ -11,4 +11,6 @@
     <string name="gb">GB</string>
     <string name="used_of">used of</string>
 
+    <string name="clear_history">Clear history</string>
+
 </resources>
