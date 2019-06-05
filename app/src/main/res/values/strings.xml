@@ -13,4 +13,11 @@
 
     <string name="clear_history">Clear history</string>
 
+    <string name="clear_history_confirmation">Are you sure you want to delete all the history?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="nothing_here">You haven\'t sent or received any files yet</string>
+
+
 </resources>
