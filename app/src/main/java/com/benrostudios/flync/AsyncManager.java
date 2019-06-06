@@ -19,12 +19,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -53,7 +51,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
             String filename = fileNameAndPaths.get(i);
 
 
-            if (mode == 1) {
+            if (mode == History.SEND) {
 
                 Socket sock;
                 try {
@@ -93,7 +91,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
                     e.printStackTrace();
                 }
             }
-            else if (mode == 2)
+            else if (mode == History.RECEIVE)
             {
 
                 try {
@@ -117,7 +115,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String>
     @Override
     protected void onPostExecute(String bitmaps)
     {
-        Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Data has been sent", Toast.LENGTH_SHORT).show();
     }
 
     private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName, int sendOrReceive)

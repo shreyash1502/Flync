@@ -26,6 +26,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.benrostudios.flync.data.History;
+
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -85,7 +87,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Creating a new Intent to invoke the File Manager
-                MODE_CODE = 1;
+                MODE_CODE = History.SEND;
                 checkPermissionsAndOpen(MODE_CODE);
 
             }
@@ -94,8 +96,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Creating a new Intent to invoke the File Manager
-               MODE_CODE =2;
-               checkPermissionsAndOpen(2);
+               MODE_CODE  = History.RECEIVE;
+               checkPermissionsAndOpen(MODE_CODE);
                 Toast.makeText(getActivity(), "Listening...", Toast.LENGTH_LONG).show();
 
             }
@@ -141,13 +143,13 @@ public class HomeFragment extends Fragment {
                         Log.d("ExMania", aList.toString());
                         try{
                             pathtofile = aList.get(1);
-                            filename = nameSplitter(pathtofile,2);
+                            filename = nameSplitter(pathtofile, History.RECEIVE);
 
 
                         }catch(Exception e){
 
                             pathtofile = getRealPathFromURI(uri);
-                            filename = nameSplitter(pathtofile,2);
+                            filename = nameSplitter(pathtofile,History.RECEIVE);
 
                         }
 
@@ -172,10 +174,10 @@ public class HomeFragment extends Fragment {
                     final String[] split = file.getPath().split(":");//split the path.
                     try{
                         selectedFilePath = split[1];
-                        filename = nameSplitter(selectedFilePath,1);
+                        filename = nameSplitter(selectedFilePath,History.SEND);
                     }catch(Exception e){
                         selectedFilePath = getRealPathFromURI(selectedFileURI);
-                        filename = nameSplitter(selectedFilePath,1);
+                        filename = nameSplitter(selectedFilePath,History.SEND);
 
                     }
                     fileNameAndPaths.add(filename);
@@ -184,7 +186,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 Log.d("ExMania", fileNameAndPaths.toString());
-                new AsyncManager(getActivity(), 1,fileNameAndPaths).execute("");
+                new AsyncManager(getActivity(), History.SEND,fileNameAndPaths).execute("");
 
 
             }
@@ -353,10 +355,10 @@ public class HomeFragment extends Fragment {
     }
 
     public void relay(int switchCode){
-        if(switchCode==1){
+        if(switchCode==History.SEND){
             openFilePicker();
 
-        }else if(switchCode == 2){
+        }else if(switchCode == History.RECEIVE){
             try{
                 Receive();}catch(IOException e){}
 
