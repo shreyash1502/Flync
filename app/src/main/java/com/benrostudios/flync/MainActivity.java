@@ -14,8 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class
-MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener
-{
+MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 //You always Implement the BottomNavBar when working with frags
 
 
@@ -24,8 +23,7 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -35,24 +33,19 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
         navigation.setSelectedItemId(R.id.navigation_home);
         navigation.setOnNavigationItemSelectedListener(this);
         //Loading the default Fragment that should be loaded at start of the app
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             tag = savedInstanceState.getString("FragTag");
             getSupportFragmentManager().findFragmentByTag(tag);
             Toast.makeText(this, "FragReused", Toast.LENGTH_SHORT).show();
 
-        }
-        else
-        {
+        } else {
             loadFrag(new HomeFragment(), "home");
         }
     }
 
     //This is a fragment transaction , basically it manages the fragments and swaps them on the activity
-    private boolean loadFrag(Fragment fragment, String Tag)
-    {
-        if (fragment != null)
-        {
+    private boolean loadFrag(Fragment fragment, String Tag) {
+        if (fragment != null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame, fragment, Tag)
@@ -64,13 +57,11 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
-    {
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Fragment fragmenthere = null;
         //A super simple switch case , ALL HAIL NETBEANS
 
-        switch (menuItem.getItemId())
-        {
+        switch (menuItem.getItemId()) {
             case R.id.navigation_home:
                 fragmenthere = new HomeFragment();
                 tag = "home";
@@ -94,18 +85,12 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("FragTag", tag);
 
     }
 
-    public static Fragment getFrag()
-    {
-        return passer;
-
-    }
 
 
 }

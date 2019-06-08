@@ -201,6 +201,7 @@ public class HomeFragment extends Fragment {
                 showError();
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, PERMISSIONS_REQUEST_CODE);
+
             }
         } else {
             relay(code);
@@ -218,6 +219,7 @@ public class HomeFragment extends Fragment {
             case PERMISSIONS_REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("Perms Granted");
                     relay(MODE_CODE);
                 } else {
                     showError();
@@ -243,6 +245,7 @@ public class HomeFragment extends Fragment {
             cursor = getActivity().getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 String fileName = cursor.getString(0);
+                Log.d("ExMania","ih"+cursor.getString(1));
                 path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
                 if (!TextUtils.isEmpty(path)) {
                     return path;
