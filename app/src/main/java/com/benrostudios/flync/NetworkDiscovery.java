@@ -17,6 +17,7 @@ public class NetworkDiscovery {
     Activity mActivity;
     boolean udprun = true;
     public ArrayList<discoveredObjects> discoverylist = new ArrayList<discoveredObjects>();
+    DatagramSocket recsocket;
 
 
 
@@ -49,10 +50,10 @@ public class NetworkDiscovery {
                 DatagramPacket packet = new DatagramPacket(lmessage, lmessage.length);
 
                 try {
-                    DatagramSocket socket = new DatagramSocket(1150);
+                     recsocket = new DatagramSocket(1150);
 
                     while (true) {
-                        socket.receive(packet);
+                        recsocket.receive(packet);
                         message = new String(lmessage, 0, packet.getLength());
                         String splitter[] = message.split("/");
                         String Name = splitter[0];
@@ -74,6 +75,10 @@ public class NetworkDiscovery {
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
+                }
+                finally{
+                    recsocket.close();
+
                 }
 
             }
