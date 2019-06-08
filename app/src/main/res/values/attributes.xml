@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <attr name="appBackgroundPrimaryColor" format="reference"/>
+    <attr name="appBackgroundSecondaryColor" format="reference"/>
+    <attr name="textColorPrimary" format="reference"/>
+    <attr name="textColorSecondary" format="reference"/>
+    <attr name="pieSecondaryColor" format="reference"/>
+    <attr name="buttonTextColor" format="reference"/>
+
+
+</resources>

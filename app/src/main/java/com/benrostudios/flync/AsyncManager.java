@@ -1,13 +1,8 @@
 package com.benrostudios.flync;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,10 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -37,30 +28,32 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static android.content.ContentValues.TAG;
-
-public class AsyncManager extends AsyncTask<String, Integer, String> {
+public class AsyncManager extends AsyncTask<String, Integer, String>
+{
 
     Activity mContext;
     Integer mode;
-    BluetoothAdapter mBluetoothAdapter;
     private ArrayList<String> fileNameAndPaths;
     String[] filenames;
 
 
-    public AsyncManager(Activity context, Integer mode, ArrayList<String> fnp) {
+    public AsyncManager(Activity context, Integer mode, ArrayList<String> fnp)
+    {
         this.mContext = context;
         this.mode = mode;
         this.fileNameAndPaths = fnp;
     }
 
     @Override
-    protected String doInBackground(String... params) {
-        if (mode == 1) {
+    protected String doInBackground(String... params)
+    {
+        for (int i = 0, j = 1; i <= fileNameAndPaths.size() - 1; i = i + 2, j = i + 1)
+        {
+            String selectedFilePath = fileNameAndPaths.get(j);
+            String filename = fileNameAndPaths.get(i);
 
-            for (int i = 0, j = 1; i <= fileNameAndPaths.size() - 1; i = i + 2, j = i + 1) {
-                String selectedFilePath = fileNameAndPaths.get(j);
-                String filename = fileNameAndPaths.get(i);
+
+            if (mode == 1) {
 
                 Socket sock;
                 try {
@@ -90,85 +83,103 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
                     insertIntoDatabase(mContext, filename, filesize, ipAddress, History.SEND);
                     sock.close();
 
-                } catch (UnknownHostException e) {
+                } catch (UnknownHostException e)
+                {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                } catch (IOException e) {
+                } catch (IOException e)
+                {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
+            else if (mode == 2)
+            {
 
-        } else if (mode == 2) {
-            String tester ="Unknown";
+                try {
+                    Recieve();
+                    Log.d("SockERROR","Started");
+                }catch(IOException e){
+                 Log.d("SockERROR",e.toString());
 
-                    try{tester = Build.MODEL;}catch(Exception e){System.out.println(e.toString());}
-            sendBroadcast(tester, 1149);
+                }
+            }
         }
 
         return null;
     }
 
     @Override
-    protected void onProgressUpdate(Integer... progress) {
+    protected void onProgressUpdate(Integer... progress)
+    {
     }
 
     @Override
-    protected void onPostExecute(String bitmaps) {
-        switch (mode) {
-            case 1:
-                Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
-                break;
-            case 2:
-                Toast.makeText(mContext, "Packet Broadcasted", Toast.LENGTH_SHORT).show();
-                System.out.println("Packet Broadcasted");
-                break;
-            default:
-                Toast.makeText(mContext, "No Mode Given", Toast.LENGTH_SHORT).show();
-        }
-
+    protected void onPostExecute(String bitmaps)
+    {
+        Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
     }
 
-    private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName, int sendOrReceive) {
+    private void insertIntoDatabase(Context context, String fileName, long fileSize, String computerName, int sendOrReceive)
+    {
         Date curDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy @ HH:mm a");
         History historyEntry = new History(sendOrReceive, fileName, fileSize, computerName, simpleDateFormat.format(curDate));
         AppDatabase db = AppDatabase.getAppDatabase(context);
         db.historyDao().insert(historyEntry);
     }
+    public void Recieve() throws IOException {
+        String msg_received;
+        String sendersIp = "";
+        int filesize;
 
-    public void sendBroadcast(String messageStr, int port) {
-        // Hack Prevent crash (sending should be done using an async task)
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
-        try {
-            //Open a random port to send the package
-            DatagramSocket socket = new DatagramSocket();
-            socket.setBroadcast(true);
-            byte[] sendData = messageStr.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getBroadcastAddress(), port);
-            socket.send(sendPacket);
-            System.out.println(getClass().getName() + "Broadcast packet sent to: " + getBroadcastAddress().getHostAddress());
-        } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.getMessage());
+        long start = System.currentTimeMillis();
+        int bytesRead;
+        int current = 0;
+
+        // create socket
+        ServerSocket servsock = new ServerSocket(1149);
+        while (true) {
+            System.out.println("Waiting...");
+
+            Socket sock = servsock.accept();
+            System.out.println("Accepted connection : " + sock);
+            DataInputStream DIS = new DataInputStream(sock.getInputStream());
+            String incomingmessages = DIS.readUTF();
+            String[] splitter = incomingmessages.split("/");
+            msg_received = splitter[0];
+            if(splitter[1].contains("/")){
+                filesize = 104857600;
+
+            }else{
+                filesize = Integer.parseInt(splitter[1])+1;
+                System.out.println(""+filesize);
+            }
+            // receive file
+            byte [] mybytearray  = new byte [filesize];
+            InputStream is = sock.getInputStream();
+            FileOutputStream fos = new FileOutputStream("C:\\Users\\aryan\\Documents\\"+msg_received);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            bytesRead = is.read(mybytearray,0,mybytearray.length);
+            current = bytesRead;
+
+            // thanks to A. Cádiz for the bug fix
+            do {
+                bytesRead =
+                        is.read(mybytearray, current, (mybytearray.length-current));
+                if(bytesRead >= 0) current += bytesRead;
+            } while(bytesRead > -1);
+            System.out.println("Downloaded!");
+            bos.write(mybytearray, 0 , current);
+            bos.flush();
+            long end = System.currentTimeMillis();
+            System.out.println(end-start);
+            bos.close();
+            insertIntoDatabase(mContext, msg_received, filesize, sendersIp, History.RECEIVE);
+            sock.close();
         }
     }
-
-    InetAddress getBroadcastAddress() throws IOException {
-        WifiManager wifi = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-        DhcpInfo dhcp = wifi.getDhcpInfo();
-        // handle null somehow
-
-        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-        byte[] quads = new byte[4];
-        for (int k = 0; k < 4; k++)
-            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-        return InetAddress.getByAddress(quads);
-    }
-
-
-
 
 }
 
