@@ -16,7 +16,7 @@ public class NetworkDiscovery {
     Timer timer2;
     Activity mActivity;
     boolean udprun = true;
-    public ArrayList<NetworkDevice> discoverylist = new ArrayList<NetworkDevice>();
+    public static  ArrayList<NetworkDevice> discoverylist = new ArrayList<NetworkDevice>();
 
 
 
@@ -114,6 +114,8 @@ public class NetworkDiscovery {
        }
 
 
+
+
     class RemindTask extends TimerTask {
 
         @Override
@@ -127,9 +129,12 @@ public class NetworkDiscovery {
 
         public void afterRun(){
 
+         new DeviceSelectorFragment().ListGetter(discoverylist);
         }
 
     }
+
+
     public class NetworkDevice{
         String ip;
         String hostname;
@@ -155,5 +160,7 @@ public class NetworkDiscovery {
 
 
     }
+
+
 
 }

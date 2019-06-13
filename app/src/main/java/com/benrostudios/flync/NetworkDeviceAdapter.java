@@ -1,6 +1,7 @@
 package com.benrostudios.flync;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,9 @@ public class NetworkDeviceAdapter extends BaseAdapter
        ImageView deviceTypeImageView = convertView.findViewById(R.id.device_type_image_view);
 
        deviceNameTextView.setText(device.getHostname());
+       Log.d("QWERTY",device.getHostname());
        deviceIPTextView.setText(device.getIp());
+        Log.d("QWERTY",device.getIp());
        deviceTypeImageView.setImageResource(getDeviceTypeResourceFile(device));
 
         return convertView;
