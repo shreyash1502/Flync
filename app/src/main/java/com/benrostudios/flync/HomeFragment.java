@@ -30,6 +30,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.benrostudios.flync.data.History;
 
@@ -127,6 +128,15 @@ public class HomeFragment extends Fragment {
     private String totalSpaceFormattedText(double totalSpaceInGB)
     {
         return getString(R.string.used_of) + " " + String.format("%.2f", totalSpaceInGB) + " " + getString(R.string.gb);
+    }
+
+    private void openDeviceSelectorFragment()
+    {
+        Fragment deviceSelector = new DeviceSelectorFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame, deviceSelector);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -398,10 +408,12 @@ public class HomeFragment extends Fragment {
     }
 
     public void relay(int switchCode){
-        if(switchCode==History.SEND){
-            openFilePicker();
-
-        }else if(switchCode == History.RECEIVE){
+        if(switchCode==History.SEND)
+        {
+            //openFilePicker();
+            openDeviceSelectorFragment();
+        }
+        else if(switchCode == History.RECEIVE){
             try{
                 Receive();}catch(IOException e){}
 

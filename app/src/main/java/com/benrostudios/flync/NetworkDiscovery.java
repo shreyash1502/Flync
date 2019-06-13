@@ -16,7 +16,7 @@ public class NetworkDiscovery {
     Timer timer2;
     Activity mActivity;
     boolean udprun = true;
-    public ArrayList<discoveredObjects> discoverylist = new ArrayList<discoveredObjects>();
+    public ArrayList<NetworkDevice> discoverylist = new ArrayList<NetworkDevice>();
 
 
 
@@ -68,7 +68,7 @@ public class NetworkDiscovery {
                             System.out.println("Already Discovered");
                             System.out.println(discoverylist);
                         } else {
-                            discoverylist.add(new discoveredObjects(discoveryIP.substring(1), Name, Type));
+                            discoverylist.add(new NetworkDevice(discoveryIP.substring(1), Name, Type));
 
                         }
 
@@ -127,20 +127,30 @@ public class NetworkDiscovery {
 
         public void afterRun(){
 
-
         }
 
     }
-    public class discoveredObjects{
+    public class NetworkDevice{
         String ip;
         String hostname;
         String type;
-        public discoveredObjects(String IP , String HOSTNAME , String TYPE){
+
+        public NetworkDevice(String IP , String HOSTNAME , String TYPE){
             this.ip = IP;
             this.hostname = HOSTNAME;
             this.type = TYPE;
+        }
 
+        public String getIp(){
+            return ip;
+        }
 
+        public String getHostname(){
+            return hostname;
+        }
+
+        public String getType(){
+            return type;
         }
 
 

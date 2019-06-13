@@ -108,5 +108,4 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
     }
 
-
 }

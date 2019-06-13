@@ -44,11 +44,11 @@ public class HistoryAdapter extends BaseAdapter
 
         History historyItem = (History) getItem(position);
 
-        TextView fileNameTextView = convertView.findViewById(R.id.file_name_text_view);
-        TextView fileSizeTextView = convertView.findViewById(R.id.file_size_text_view);
+        TextView fileNameTextView = convertView.findViewById(R.id.hostname_text_view);
+        TextView fileSizeTextView = convertView.findViewById(R.id.device_ip_text_view);
         TextView fileTimeTextView = convertView.findViewById(R.id.file_time_text_view);
         ImageView sendReceiveImageView = convertView.findViewById(R.id.send_receive_indicator_image_view);
-        ImageView fileTypeImageView = convertView.findViewById(R.id.file_type_image_view);
+        ImageView fileTypeImageView = convertView.findViewById(R.id.device_type_image_view);
 
         fileNameTextView.setText(historyItem.getFileName());
         fileSizeTextView.setText(Formatter.formatFileSize(mContext, historyItem.getFileSize()));

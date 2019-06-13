@@ -18,9 +18,8 @@
     <string name="no">No</string>
 
     <string name="nothing_here">You haven\'t sent or received any files yet</string>
+    <string name="looking_devices">Looking for devices on the network</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
