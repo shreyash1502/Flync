@@ -103,6 +103,7 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
     public static Fragment getFrag()
     {
+
         return passer;
 
     }

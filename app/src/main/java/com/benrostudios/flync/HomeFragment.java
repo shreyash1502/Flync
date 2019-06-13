@@ -2,13 +2,18 @@ package com.benrostudios.flync;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -45,6 +50,7 @@ import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 public class HomeFragment extends Fragment {
 
 
+    private static final String TAG ="Hello" ;
     private String selectedFilePath;
     private Uri selectedFileURI;
 
@@ -129,40 +135,61 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         // The Request code was randomly assigned , if you are wondering
         if (data != null) {
+            fileNameAndPaths.clear();
             if (requestCode == FILE_PICKER_REQUEST_CODE) {
 
 
                 ClipData clipData = data.getClipData();
                 if (clipData != null) {
-                    fileNameAndPaths.clear();
                     for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                         Uri uri = data.getClipData().getItemAt(i).getUri();
                         File file = new File(uri.getPath());//create path from uri
                         Log.d("ExMania", file.getPath());
                         ArrayList<String> aList = new ArrayList<String>(Arrays.asList(file.getPath().split(":")));
                         Log.d("ExMania", aList.toString());
-                        try{
-                            pathtofile = aList.get(1);
-                            filename = nameSplitter(pathtofile, History.RECEIVE);
+
+                        if (file.getPath().contains("raw")) {
+
+                            try {
+                                final String[] split = file.getPath().split(":");
+                                Log.d("ExMania", "multiple raw");
+                                pathtofile = split[1];
+                                Log.d("Looper", split[1]);
+                                filename = nameSplitter(pathtofile, 1);
 
 
-                        }catch(Exception e){
 
-                            pathtofile = getRealPathFromURI(uri);
-                            filename = nameSplitter(pathtofile,History.RECEIVE);
+                            } catch (Exception e) {
+                                Log.d("ExMania", "Exception Entered");
+                                Log.d("ExMania", e.toString());
+
+                            }
+
+
+                        } else {
+
+                            try {
+                                Log.d("ExMania", "multiple content");
+                                pathtofile = PathFetcher.getPath(getContext(), uri);
+                                filename = nameSplitter(pathtofile, 1);
+
+
+                            } catch (Exception e) {
+                                Log.d("ExMania", "Exception Entered");
+                                Log.d("ExMania", e.toString());
+
+                            }
+
+
+
 
                         }
-
-
-
                         Log.d("ExMania", pathtofile);
                         fileNameAndPaths.add(filename);
                         fileNameAndPaths.add(pathtofile);
                         aList.clear();
 
                         selectedFilePath = pathtofile;
-
-
                     }
 
 
@@ -171,17 +198,30 @@ public class HomeFragment extends Fragment {
                     selectedFileURI = data.getData();
                     File file = new File(selectedFileURI.getPath());//create path from uri
                     Log.d("ExMania", selectedFileURI.toString());
-                    final String[] split = file.getPath().split(":");//split the path.
-                    try{
-                        selectedFilePath = split[1];
-                        filename = nameSplitter(selectedFilePath,History.SEND);
-                    }catch(Exception e){
-                        selectedFilePath = getRealPathFromURI(selectedFileURI);
-                        filename = nameSplitter(selectedFilePath,History.SEND);
+                    if(file.getPath().contains("raw")){
+                        Log.d("ExMania", "Single RAW");
+                        final String[] split = file.getPath().split(":");//split the path.
+                        try{
+                            selectedFilePath = split[1];
+                            filename = nameSplitter(selectedFilePath,1);
+                        }catch(Exception e){
+                            Log.d("ExMania",e.toString());
 
+                        }
+                    }else {
+                        final String[] split = file.getPath().split(":");//split the path.
+                        try {
+                            Log.d("ExMania", "Single content");
+                            selectedFilePath = PathFetcher.getPath(getContext(), selectedFileURI);
+                            filename = nameSplitter(selectedFilePath, 1);
+                        } catch (Exception e) {
+                            Log.d("ExMania", e.toString());
+
+                        }
                     }
                     fileNameAndPaths.add(filename);
                     fileNameAndPaths.add(selectedFilePath);
+                    Log.d("ExMan",fileNameAndPaths.toString());
 
                 }
 
@@ -247,7 +287,6 @@ public class HomeFragment extends Fragment {
             cursor = getActivity().getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
                 String fileName = cursor.getString(0);
-                Log.d("ExMania","ih"+cursor.getString(1));
                 path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
                 if (!TextUtils.isEmpty(path)) {
                     return path;
@@ -258,6 +297,7 @@ public class HomeFragment extends Fragment {
         }
         return path;
     }
+
 
     private String nameSplitter(String name, int mode ){
         String returnName;
@@ -369,9 +409,5 @@ public class HomeFragment extends Fragment {
         }
 
     }
-
-
-
-
 
 }

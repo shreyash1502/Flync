@@ -17,7 +17,7 @@ public class NetworkDiscovery {
     Activity mActivity;
     boolean udprun = true;
     public ArrayList<discoveredObjects> discoverylist = new ArrayList<discoveredObjects>();
-    DatagramSocket recsocket;
+
 
 
 
@@ -48,9 +48,10 @@ public class NetworkDiscovery {
                 String message;
                 byte[] lmessage = new byte[15000];
                 DatagramPacket packet = new DatagramPacket(lmessage, lmessage.length);
-
+                try{
+                    DatagramSocket recsocket  = new DatagramSocket(1150);
                 try {
-                     recsocket = new DatagramSocket(1150);
+
 
                     while (true) {
                         recsocket.receive(packet);
@@ -67,19 +68,19 @@ public class NetworkDiscovery {
                             System.out.println("Already Discovered");
                             System.out.println(discoverylist);
                         } else {
-                            discoverylist.add(new discoveredObjects(discoveryIP.substring(1),Name,Type));
+                            discoverylist.add(new discoveredObjects(discoveryIP.substring(1), Name, Type));
 
                         }
 
-
                     }
+                    } finally{
+                      recsocket.close();
+
+                }
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                finally{
-                    recsocket.close();
 
-                }
 
             }
         });
@@ -118,11 +119,17 @@ public class NetworkDiscovery {
         @Override
         public void run() {
             System.out.println("Timeout!");
-
             udprun = false;
             timer2.cancel();
+            afterRun();
 
         }
+
+        public void afterRun(){
+
+
+        }
+
     }
     public class discoveredObjects{
         String ip;

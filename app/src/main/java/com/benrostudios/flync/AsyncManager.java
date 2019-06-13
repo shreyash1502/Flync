@@ -56,7 +56,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
 
 
                     // sendfile
-                    String ipAddress = "192.168.1.13";
+                    String ipAddress = "192.168.0.111";
                     sock = new Socket(ipAddress, 1149);
                     File myFile = new File(selectedFilePath);
 
