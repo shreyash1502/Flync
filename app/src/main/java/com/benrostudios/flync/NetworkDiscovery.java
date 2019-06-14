@@ -18,6 +18,7 @@ public class NetworkDiscovery {
     Activity mActivity;
     boolean udprun = true;
     public static  ArrayList<NetworkDevice> discoverylist = new ArrayList<NetworkDevice>();
+    public static  ArrayList<String> alreadyDiscovered = new ArrayList<String>();
 
 
 
@@ -65,11 +66,22 @@ public class NetworkDiscovery {
                         System.out.println(Name);
                         System.out.println(Type);
 
-                        if (discoverylist.contains(discoveryIP)) {
+                        if (alreadyDiscovered.contains(discoveryIP)) {
                             System.out.println("Already Discovered");
                             System.out.println(discoverylist);
                         } else {
                             discoverylist.add(new NetworkDevice(discoveryIP.substring(1), Name, Type));
+                            alreadyDiscovered.add(discoveryIP);
+
+                        }
+
+                        if(alreadyDiscovered !=null){
+                            mActivity.runOnUiThread(new Runnable(){
+                                public void run() {
+                                    DeviceSelectorFragment.adapter.notifyDataSetChanged();
+
+                                }
+                            });
 
                         }
 
@@ -129,7 +141,9 @@ public class NetworkDiscovery {
         }
 
         public void afterRun(){
-            DeviceSelectorFragment.adapter.notifyDataSetChanged();
+
+
+
         }
 
     }
