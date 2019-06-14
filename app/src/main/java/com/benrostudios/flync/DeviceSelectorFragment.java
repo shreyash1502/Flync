@@ -18,7 +18,7 @@ import java.util.List;
 public class DeviceSelectorFragment extends Fragment
 {
 
-    NetworkDeviceAdapter adapter;
+    public static NetworkDeviceAdapter adapter;
     ArrayList<NetworkDevice> devices;
 
 
@@ -31,26 +31,15 @@ public class DeviceSelectorFragment extends Fragment
         new NetworkDiscovery(getActivity());
 
         devices = NetworkDiscovery.discoverylist;
-        Log.d("John",devices.toString());
         adapter = new NetworkDeviceAdapter(getActivity(), devices);
         ListView itemsListView  = fragview.findViewById(R.id.devices_list_view);
         itemsListView.setDivider(null);
         itemsListView.setEmptyView(fragview.findViewById(R.id.no_device_empty_view));
         itemsListView.setAdapter(adapter);
 
-
         return fragview;
     }
 
-    public void ListGetter(ArrayList<NetworkDevice> firstList ){
 
-        System.out.println("List has been passed");
-        devices = firstList;
-        Log.d("John",devices.toString());
-        adapter = new NetworkDeviceAdapter(getActivity(), firstList);
-
-
-
-    }
 
 }

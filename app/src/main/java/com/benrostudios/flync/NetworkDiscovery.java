@@ -1,6 +1,7 @@
 package com.benrostudios.flync;
 
 import android.app.Activity;
+import android.content.Intent;
 
 
 import java.net.DatagramPacket;
@@ -128,8 +129,7 @@ public class NetworkDiscovery {
         }
 
         public void afterRun(){
-
-         new DeviceSelectorFragment().ListGetter(discoverylist);
+            DeviceSelectorFragment.adapter.notifyDataSetChanged();
         }
 
     }

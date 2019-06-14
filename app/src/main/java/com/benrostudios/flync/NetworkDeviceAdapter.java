@@ -40,9 +40,7 @@ public class NetworkDeviceAdapter extends BaseAdapter
        ImageView deviceTypeImageView = convertView.findViewById(R.id.device_type_image_view);
 
        deviceNameTextView.setText(device.getHostname());
-       Log.d("QWERTY",device.getHostname());
        deviceIPTextView.setText(device.getIp());
-        Log.d("QWERTY",device.getIp());
        deviceTypeImageView.setImageResource(getDeviceTypeResourceFile(device));
 
         return convertView;
