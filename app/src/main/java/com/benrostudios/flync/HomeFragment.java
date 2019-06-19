@@ -48,10 +48,11 @@ import java.util.Arrays;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment
+{
 
 
-    private static final String TAG ="Hello" ;
+    private static final String TAG = "Hello";
     private String selectedFilePath;
     private Uri selectedFileURI;
 
@@ -62,14 +63,14 @@ public class HomeFragment extends Fragment {
     public static final int PERMISSIONS_REQUEST_CODE = 0;
     public static final int FILE_PICKER_REQUEST_CODE = 1;
     private final static double noBytesInOneGB = 1000000000.0;
-    private static int MODE_CODE;
 
     private TextView mUsedSpaceTextView;
     private TextView mTotalSpaceTextView;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
         final View fragview = inflater.inflate(R.layout.fragment_home, null);
 
         CircularProgressIndicator circularProgress = fragview.findViewById(R.id.circular_progress);
@@ -85,26 +86,28 @@ public class HomeFragment extends Fragment {
         mUsedSpaceTextView.setText(usedSpaceFormattedText(usedSpaceInGB));
         mTotalSpaceTextView.setText(totalSpaceFormattedText(totalSpaceInGB));
 
-        float usedPercent = (float) (usedSpaceInGB/totalSpaceInGB)*100;
+        float usedPercent = (float) (usedSpaceInGB / totalSpaceInGB) * 100;
         circularProgress.setProgress(usedPercent, 100);
         circularProgress.setProgressTextAdapter(TEXT_ADAPTER);
         CardView sendButton = fragview.findViewById(R.id.sendCardView);
         CardView receiveButton = fragview.findViewById(R.id.receiveCardView);
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 //Creating a new Intent to invoke the File Manager
-                MODE_CODE = History.SEND;
-                checkPermissionsAndOpen(MODE_CODE);
+                openDeviceSelectorFragment();
 
             }
         });
-        receiveButton.setOnClickListener(new View.OnClickListener() {
+        receiveButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 //Creating a new Intent to invoke the File Manager
-               MODE_CODE  = History.RECEIVE;
-               checkPermissionsAndOpen(MODE_CODE);
+                checkPermissionsAndOpen();
                 Toast.makeText(getActivity(), "Listening...", Toast.LENGTH_LONG).show();
 
             }
@@ -112,9 +115,11 @@ public class HomeFragment extends Fragment {
         return fragview;
     }
 
-    private static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = new CircularProgressIndicator.ProgressTextAdapter() {
+    private static final CircularProgressIndicator.ProgressTextAdapter TEXT_ADAPTER = new CircularProgressIndicator.ProgressTextAdapter()
+    {
         @Override
-        public String formatText(double progress) {
+        public String formatText(double progress)
+        {
             String text = String.format("%.1f", progress) + "% used";
             return text;
         }
@@ -139,200 +144,81 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
-    @Override
-    //Method which acts upon the Intent's Result(File Explorer)
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // The Request code was randomly assigned , if you are wondering
-        if (data != null) {
-            fileNameAndPaths.clear();
-            if (requestCode == FILE_PICKER_REQUEST_CODE) {
-
-
-                ClipData clipData = data.getClipData();
-                if (clipData != null) {
-                    for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                        Uri uri = data.getClipData().getItemAt(i).getUri();
-                        File file = new File(uri.getPath());//create path from uri
-                        Log.d("ExMania", file.getPath());
-                        ArrayList<String> aList = new ArrayList<String>(Arrays.asList(file.getPath().split(":")));
-                        Log.d("ExMania", aList.toString());
-
-                        if (file.getPath().contains("raw")) {
-
-                            try {
-                                final String[] split = file.getPath().split(":");
-                                Log.d("ExMania", "multiple raw");
-                                pathtofile = split[1];
-                                Log.d("Looper", split[1]);
-                                filename = nameSplitter(pathtofile, 1);
-
-
-
-                            } catch (Exception e) {
-                                Log.d("ExMania", "Exception Entered");
-                                Log.d("ExMania", e.toString());
-
-                            }
-
-
-                        } else {
-
-                            try {
-                                Log.d("ExMania", "multiple content");
-                                pathtofile = PathFetcher.getPath(getContext(), uri);
-                                filename = nameSplitter(pathtofile, 1);
-
-
-                            } catch (Exception e) {
-                                Log.d("ExMania", "Exception Entered");
-                                Log.d("ExMania", e.toString());
-
-                            }
-
-
-
-
-                        }
-                        Log.d("ExMania", pathtofile);
-                        fileNameAndPaths.add(filename);
-                        fileNameAndPaths.add(pathtofile);
-                        aList.clear();
-
-                        selectedFilePath = pathtofile;
-                    }
-
-
-                } else {
-
-                    selectedFileURI = data.getData();
-                    File file = new File(selectedFileURI.getPath());//create path from uri
-                    Log.d("ExMania", selectedFileURI.toString());
-                    if(file.getPath().contains("raw")){
-                        Log.d("ExMania", "Single RAW");
-                        final String[] split = file.getPath().split(":");//split the path.
-                        try{
-                            selectedFilePath = split[1];
-                            filename = nameSplitter(selectedFilePath,1);
-                        }catch(Exception e){
-                            Log.d("ExMania",e.toString());
-
-                        }
-                    }else {
-                        final String[] split = file.getPath().split(":");//split the path.
-                        try {
-                            Log.d("ExMania", "Single content");
-                            selectedFilePath = PathFetcher.getPath(getContext(), selectedFileURI);
-                            filename = nameSplitter(selectedFilePath, 1);
-                        } catch (Exception e) {
-                            Log.d("ExMania", e.toString());
-
-                        }
-                    }
-                    fileNameAndPaths.add(filename);
-                    fileNameAndPaths.add(selectedFilePath);
-                    Log.d("ExMan",fileNameAndPaths.toString());
-
-                }
-
-                Log.d("ExMania", fileNameAndPaths.toString());
-                new AsyncManager(getActivity(), History.SEND,fileNameAndPaths).execute("");
-
-
-            }
-        }
-    }
-
-
-    private void checkPermissionsAndOpen(int code) {
+    private void checkPermissionsAndOpen()
+    {
         String permission = Manifest.permission.READ_EXTERNAL_STORAGE;
 
-        if (ContextCompat.checkSelfPermission(getActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getActivity(), permission) != PackageManager.PERMISSION_GRANTED)
+        {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), permission))
+            {
                 showError();
-            } else {
+            }
+            else
+            {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{permission}, PERMISSIONS_REQUEST_CODE);
 
             }
-        } else {
-            relay(code);
+        }
+        else
+        {
+            try
+            {
+                Receive();
+            }
+            catch (IOException e)
+            {
+                Log.e("HomeFragment", e.getMessage());
+            }
+
         }
     }
 
-    private void showError() {
+    private void showError()
+    {
         Toast.makeText(getActivity(), "Allow external storage reading", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CODE: {
+                                           @NonNull String permissions[], @NonNull int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case PERMISSIONS_REQUEST_CODE:
+            {
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
                     System.out.println("Perms Granted");
-                    relay(MODE_CODE);
-                } else {
+                    try
+                    {
+                        Receive();
+                    }
+                    catch (IOException e)
+                    {
+                        Log.e("HomeFragment", e.getMessage());
+                    }
+                }
+                else
+                {
                     showError();
                 }
             }
         }
     }
 
-    public void openFilePicker() {
-        Intent chooseFile;
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        chooseFile = Intent.createChooser(intent, "Choose a file");
-        startActivityForResult(chooseFile, FILE_PICKER_REQUEST_CODE);
 
-    }
-
-    private String getRealPathFromURI(Uri uri) {
-        Cursor cursor = null;
-        String path = null;
-        try {
-            cursor = getActivity().getContentResolver().query(uri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                String fileName = cursor.getString(0);
-                path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
-                if (!TextUtils.isEmpty(path)) {
-                    return path;
-                }
-            }
-        } finally {
-            if (cursor != null) cursor.close();
-        }
-        return path;
-    }
-
-
-    private String nameSplitter(String name, int mode ){
-        String returnName;
-        if(mode == 1) {
-            String[] splitter = name.split("/");
-            int filepos = splitter.length - 1;
-            returnName = splitter[filepos];
-        }else{
-            ArrayList<String> b = new ArrayList<String>(Arrays.asList(name.split("/")));
-            int filepos = b.size()-1;
-            returnName = b.get(filepos);
-            b.clear();
-
-
-
-        }
-
-
-        return returnName;
-    }
-    public void Receive() throws IOException {
-        Thread thread = new Thread(new Runnable() {
+    public void Receive() throws IOException
+    {
+        Thread thread = new Thread(new Runnable()
+        {
             @Override
-            public void run()  {
-                try{
+            public void run()
+            {
+                try
+                {
                     String msg_received;
                     int filesize;
 
@@ -343,7 +229,8 @@ public class HomeFragment extends Fragment {
 
                     // create socket
                     ServerSocket servsock = new ServerSocket(1149);
-                    while (true) {
+                    while (true)
+                    {
                         System.out.println("Waiting...");
 
                         Socket sock = servsock.accept();
@@ -353,10 +240,13 @@ public class HomeFragment extends Fragment {
                         String incomingmessages = DIS.readUTF();
                         String[] splitter = incomingmessages.split("/");
                         msg_received = splitter[0];
-                        if (splitter[1].contains("/")) {
+                        if (splitter[1].contains("/"))
+                        {
                             filesize = 104857600;
 
-                        } else {
+                        }
+                        else
+                        {
                             filesize = Integer.parseInt(splitter[1]) + 1;
                             System.out.println("" + filesize);
                         }
@@ -369,10 +259,13 @@ public class HomeFragment extends Fragment {
                         System.out.println(file);
                         boolean isCreated = file.createNewFile();
                         FileOutputStream fos = new FileOutputStream(file);
-                        if(isCreated){
+                        if (isCreated)
+                        {
                             System.out.println("FileCreated");
 
-                        }else{
+                        }
+                        else
+                        {
                             System.out.println("Already Exists?");// The file is receievd , but it cannot create it on your phone
 
                         }
@@ -381,11 +274,13 @@ public class HomeFragment extends Fragment {
                         bytesRead = is.read(mybytearray, 0, mybytearray.length);
                         current = bytesRead;
 
-                        do {
+                        do
+                        {
                             bytesRead =
                                     is.read(mybytearray, current, (mybytearray.length - current));
                             if (bytesRead >= 0) current += bytesRead;
-                        } while (bytesRead > -1);
+                        }
+                        while (bytesRead > -1);
                         System.out.println("Downloaded!");
                         bos.write(mybytearray, 0, current);
                         bos.flush();
@@ -396,7 +291,9 @@ public class HomeFragment extends Fragment {
 
                         sock.close();
                     }
-                }catch(IOException e ){
+                }
+                catch (IOException e)
+                {
 
                     System.out.println(e.toString());
 
@@ -405,21 +302,6 @@ public class HomeFragment extends Fragment {
         });
         thread.setDaemon(true);
         thread.start();
-    }
-
-    public void relay(int switchCode){
-        if(switchCode==History.SEND)
-        {
-            //openFilePicker();
-            openDeviceSelectorFragment();
-        }
-        else if(switchCode == History.RECEIVE){
-            try{
-                Receive();}catch(IOException e){}
-
-
-        }
-
     }
 
 }

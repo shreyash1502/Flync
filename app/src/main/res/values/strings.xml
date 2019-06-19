@@ -20,6 +20,18 @@
     <string name="nothing_here">You haven\'t sent or received any files yet</string>
     <string name="looking_devices">Looking for devices on the network</string>
 
+    <string name="scanning_stopped">Scanning stopped</string>
+    <string name="restart">Restart</string>
+    <string name="no_device">No devices found on the network</string>
+    
+    
+    <!--START: Tags used for settings preference screen-->
+    
+    
+    <string name="settings_theme_title">App theme</string>
+    
+
+    <!--END: Tags used for settings preference screen-->
 
 
 </resources>

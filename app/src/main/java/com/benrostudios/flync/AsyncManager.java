@@ -34,7 +34,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
     Integer mode;
     private ArrayList<String> fileNameAndPaths;
     String[] filenames;
-
+    public static String ipAddress;
 
     public AsyncManager(Activity context, Integer mode, ArrayList<String> fnp) {
         this.mContext = context;
@@ -56,7 +56,6 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
 
 
                     // sendfile
-                    String ipAddress = "192.168.0.111";
                     sock = new Socket(ipAddress, 1149);
                     File myFile = new File(selectedFilePath);
 

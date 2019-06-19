@@ -2,7 +2,17 @@ package com.benrostudios.flync;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -16,7 +26,7 @@ public class NetworkDiscovery {
     Thread pinghread;
     Timer timer2;
     Activity mActivity;
-    boolean udprun = true;
+    public boolean udprun = true;
     public static  ArrayList<NetworkDevice> discoverylist = new ArrayList<NetworkDevice>();
     public static  ArrayList<String> alreadyDiscovered = new ArrayList<String>();
 
@@ -55,7 +65,8 @@ public class NetworkDiscovery {
                 try {
 
 
-                    while (true) {
+                    while (true)
+                    {
                         recsocket.receive(packet);
                         message = new String(lmessage, 0, packet.getLength());
                         String splitter[] = message.split("/");
@@ -78,6 +89,7 @@ public class NetworkDiscovery {
                         if(alreadyDiscovered !=null){
                             mActivity.runOnUiThread(new Runnable(){
                                 public void run() {
+                                    DeviceSelectorFragment.updateDevices();
                                     DeviceSelectorFragment.adapter.notifyDataSetChanged();
 
                                 }
@@ -99,9 +111,6 @@ public class NetworkDiscovery {
         });
         thread.setDaemon(true);
         thread.start();
-
-
-        return;
 
     }
 
@@ -126,6 +135,103 @@ public class NetworkDiscovery {
 
        }
 
+//START: UI and UX stuff for DeviceSelectorFragment
+    private void showSnackbar()
+    {
+        Snackbar snackbar = Snackbar.make(mActivity.findViewById(R.id.device_selector_coordinator_layout), R.string.scanning_stopped, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.restart, new RestartListner());
+        snackbar.setBehavior(new NoSwipeBehavior());
+        snackbar.show();
+    }
+
+
+
+    private class RestartListner implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v)
+        {
+            discoverylist.clear();
+            mActivity.runOnUiThread(new Runnable(){
+                public void run() {
+                    DeviceSelectorFragment.adapter.notifyDataSetChanged();
+                }
+            });
+            showScanning();
+            new NetworkDiscovery(mActivity);
+        }
+    }
+
+    private class NoSwipeBehavior extends BaseTransientBottomBar.Behavior
+    {
+        @Override
+        public boolean canSwipeDismissView(View child)
+        {
+            return false;
+        }
+    }
+
+    private ProgressBar progressCircle;
+    private TextView scanningDevicesTextView;
+    private TextView noDevicesTextView;
+
+
+    private void showScanning()
+    {
+        mActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                progressCircle = mActivity.findViewById(R.id.progress_circular);
+                scanningDevicesTextView = mActivity.findViewById(R.id.scanning_devices_text_view);
+                noDevicesTextView = mActivity.findViewById(R.id.no_devices);
+                progressCircle.setVisibility(View.VISIBLE);
+                scanningDevicesTextView.setVisibility(View.VISIBLE);
+                noDevicesTextView.setVisibility(View.INVISIBLE);
+
+            }
+        });
+    }
+
+    private void showSomeDevicesButNotScanning()
+    {
+        mActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                progressCircle = mActivity.findViewById(R.id.progress_circular);
+                scanningDevicesTextView = mActivity.findViewById(R.id.scanning_devices_text_view);
+                noDevicesTextView = mActivity.findViewById(R.id.no_devices);
+                progressCircle.setVisibility(View.INVISIBLE);
+                scanningDevicesTextView.setVisibility(View.INVISIBLE);
+                noDevicesTextView.setVisibility(View.INVISIBLE);
+
+            }
+        });
+    }
+
+    private void showNoDevicesNotScanning()
+    {
+        mActivity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                progressCircle = mActivity.findViewById(R.id.progress_circular);
+                scanningDevicesTextView = mActivity.findViewById(R.id.scanning_devices_text_view);
+                noDevicesTextView = mActivity.findViewById(R.id.no_devices);
+                progressCircle.setVisibility(View.INVISIBLE);
+                scanningDevicesTextView.setVisibility(View.INVISIBLE);
+                noDevicesTextView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+
+
+//END: UI and UX stuff for DeviceSelectorFragment
 
 
 
@@ -141,9 +247,12 @@ public class NetworkDiscovery {
         }
 
         public void afterRun(){
+            if(discoverylist.size()==0 || discoverylist == null)
+                showNoDevicesNotScanning();
+            else
+                showSomeDevicesButNotScanning();
 
-
-
+            showSnackbar();
         }
 
     }

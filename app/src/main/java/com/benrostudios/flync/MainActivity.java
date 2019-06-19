@@ -80,7 +80,7 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
                 tag = "history";
                 break;
             case R.id.navigation_settings:
-                fragmenthere = new Settings();
+                fragmenthere = new SettingsFragment();
                 tag = "settings";
                 break;
         }
