@@ -234,7 +234,11 @@ public class DeviceSelectorFragment extends Fragment
                 }
 
                 Log.d("ExMania", fileNameAndPaths.toString());
-                new AsyncManager(getActivity(), History.SEND, fileNameAndPaths).execute("");
+                new AsyncManager(getActivity(), 1, fileNameAndPaths).execute("");
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, new HomeFragment(), "home")
+                        .commit();
 
 
             }

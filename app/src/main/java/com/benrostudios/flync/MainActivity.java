@@ -49,7 +49,7 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
     }
 
     //This is a fragment transaction , basically it manages the fragments and swaps them on the activity
-    private boolean loadFrag(Fragment fragment, String Tag)
+    public boolean loadFrag(Fragment fragment, String Tag)
     {
         if (fragment != null)
         {
@@ -101,11 +101,6 @@ MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigat
 
     }
 
-    public static Fragment getFrag()
-    {
 
-        return passer;
-
-    }
 
 }

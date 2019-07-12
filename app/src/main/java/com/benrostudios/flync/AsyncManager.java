@@ -34,7 +34,7 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
     Integer mode;
     private ArrayList<String> fileNameAndPaths;
     String[] filenames;
-    public static String ipAddress;
+    public static String ipAddress ;
 
     public AsyncManager(Activity context, Integer mode, ArrayList<String> fnp) {
         this.mContext = context;
@@ -101,9 +101,9 @@ public class AsyncManager extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPostExecute(String bitmaps) {
         switch(mode){
-            case 1: Toast.makeText(mContext, "Data Sent", Toast.LENGTH_SHORT).show();
+            case 1: Toast.makeText(mContext, "Data Sent to "+ipAddress, Toast.LENGTH_SHORT).show();
                 break;
-            case 2: Toast.makeText(mContext, "Packet Broadcasted!", Toast.LENGTH_SHORT).show();
+            case 2: Toast.makeText(mContext, "Packet Broadcasted ", Toast.LENGTH_SHORT).show();
                 break;
             default: System.out.println("No Mode Selected");
 

@@ -23,13 +23,13 @@
     <string name="scanning_stopped">Scanning stopped</string>
     <string name="restart">Restart</string>
     <string name="no_device">No devices found on the network</string>
-    
-    
+
+
     <!--START: Tags used for settings preference screen-->
-    
-    
+
+
     <string name="settings_theme_title">App theme</string>
-    
+
 
     <!--END: Tags used for settings preference screen-->
 
